@@ -1,14 +1,13 @@
 import React, { ChangeEvent, useState } from 'react';
 import { Button, Form, Segment } from 'semantic-ui-react';
-import { IActivity } from '../../../app/models/IActivity';
+import { useStore } from '../../../app/stores/store';
+import { observer } from 'mobx-react-lite';
 
-interface IProps{
-    activity: IActivity | undefined;
-    closeForm: () => void;
-    createOrEdit: (activity: IActivity) => void;
-}
 
-export default function ActivityForm({activity: selectedActivity, closeForm, createOrEdit}: IProps){
+export default observer( function ActivityForm(){
+
+    const {activityStore} = useStore();
+    const {selectedActivity, closeForm, createActivity, updateActivity, loading} = activityStore
 
     const initialState = selectedActivity ?? {
         id: '',
@@ -23,7 +22,7 @@ export default function ActivityForm({activity: selectedActivity, closeForm, cre
     const [activity, setActivity] = useState(initialState);
 
     function handleSubmit() {
-        createOrEdit(activity);
+        activity.id ? updateActivity(activity) : createActivity(activity);
     }
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>){
@@ -52,7 +51,8 @@ export default function ActivityForm({activity: selectedActivity, closeForm, cre
                     name='category'
                     onChange={handleInputChange}   
                 />
-                <Form.Input 
+                <Form.Input
+                    type='date' 
                     placeholder='Date'
                     value={activity.date} 
                     name='date'
@@ -70,9 +70,9 @@ export default function ActivityForm({activity: selectedActivity, closeForm, cre
                     name='venue'
                     onChange={handleInputChange}   
                 />
-                <Button floated='right' positive type='submit' content='Submit' />
+                <Button loading={loading} floated='right' positive type='submit' content='Submit' />
                 <Button onClick={closeForm} floated='right' type='button' content='Cancel' />
             </Form>
         </Segment>
     )
-}
+})
