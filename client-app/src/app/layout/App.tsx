@@ -1,28 +1,24 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { Container } from 'semantic-ui-react';
 import NavBar from './NavBar';
-import ActivityDashboard from '../../features/activities/dashboard/ActivityDashoard';
-import LoadingComponent from './loadingComponents';
-import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
+import { Outlet, useLocation } from 'react-router-dom';
+import HomePage from '../../features/home/HomePage';
 
 function App() {
-  const { activityStore } = useStore();
-
-  useEffect(() => {
-    activityStore.loadActivities();
-  },[activityStore]);
-
-  if(activityStore.loadingInitial) return <LoadingComponent content='loading app' />
+  const location = useLocation();
 
   return (
-    <Fragment>
-        <NavBar />
-        
-        <Container style={{ marginTop: '7em' }}>
-          <ActivityDashboard />
-        </Container>
-    </Fragment>
+    <>
+      {location.pathname === '/' ? <HomePage /> : (
+        <>
+          <NavBar /> 
+          <Container style={{ marginTop: '7em' }}>
+            <Outlet />
+          </Container>
+        </>
+      )}
+    </>
   );
 }
 
