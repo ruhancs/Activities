@@ -3,6 +3,8 @@ using Application.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 
 namespace API.Extensions
 {
@@ -38,6 +40,11 @@ namespace API.Extensions
 
             //registro do automapper que esta em application Core MappingProfiles
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
+            //habilitar validaçoes das requests
+            services.AddFluentValidationAutoValidation();
+            //onde sera aplicado as validaçoes
+            services.AddValidatorsFromAssemblyContaining<CreateUseCase>();
 
             return services;
         }
