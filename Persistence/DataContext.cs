@@ -1,14 +1,18 @@
+using Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-// fazer a primeira migraçao do db
+// migraçoes
 //dotnet ef migrations add InitialCreate -s API -p Persistence
+//dotnet ef migrations add IdentityAdded -p Persistence -s API
 
 //criaçao do database feita em program
 
 namespace Persistence
 {
-    //habilitar o DataContext em program como service 
-    public class DataContext : DbContext
+    //habilitar o DataContext em program como service
+     //IdentityDbContext<AppUser>ja habilita a entidade AppUser
+    public class DataContext : IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions options) : base(options)
         {

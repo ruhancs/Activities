@@ -1,4 +1,5 @@
 using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
@@ -6,8 +7,24 @@ namespace Persistence
     //dados para adicionar ao database em program
     public class Seed
     {
-        public static async Task SeedData(DataContext context)
+        public static async Task SeedData(DataContext context, UserManager<AppUser> userManager)
         {
+            if(!userManager.Users.Any())
+            {
+                var users = new List<AppUser>
+                {
+                    new AppUser{DisplayName = "Bob", UserName="bob", Email = "bob@email.com"},
+                    new AppUser{DisplayName = "Ju", UserName="ju", Email = "ju@email.com"},
+                    new AppUser{DisplayName = "Mi", UserName="mi", Email = "mi@email.com"},
+                };
+
+                foreach (var user in users)
+                {
+                    await userManager.CreateAsync(user, "Senha1234");
+                }
+
+            }
+
             if (context.Activities.Any()) return;
             
             var activities = new List<Activity>

@@ -1,16 +1,29 @@
 using API.Extensions;
 using API.Middleware;
+using Domain;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opt => 
+{
+    //para indicar que os endpoints requerem authentication
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
+});
 
 //adicionado a extensao de serviços criados em ApplicationServiceExtension
 //que configura os services utilizados em application
 builder.Services.AddApplicationServices(builder.Configuration);
+
+//criado em extensions IdentityServiceExtensions
+//configuraçoes da entidade AppUser e authenticaçao
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -28,6 +41,8 @@ app.UseCors("CorsPolicy");
 
 //app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -41,10 +56,11 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<Persistence.DataContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
 
     //adicionar os dados criados em seed ao db
-    await Persistence.Seed.SeedData(context);
+    await Persistence.Seed.SeedData(context, userManager);
 }
 catch (Exception ex)
 {
