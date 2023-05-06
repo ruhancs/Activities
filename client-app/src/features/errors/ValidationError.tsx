@@ -1,7 +1,7 @@
 import { Message } from "semantic-ui-react";
 
 interface IProps {
-    errors: string[];
+    errors: any;
 }
 
 export default function ValidationError({errors}: IProps){
@@ -9,7 +9,7 @@ export default function ValidationError({errors}: IProps){
         <Message error>
             {errors && (
                 <Message.List>
-                    {errors.map((err: string, index) => (
+                    {errors.map((err: any, index:any) => (
                         <Message.Item key={index}>{err}</Message.Item>
                     ))}
                 </Message.List>
