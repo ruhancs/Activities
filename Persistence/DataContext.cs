@@ -20,5 +20,26 @@ namespace Persistence
 
         // Activities representa o nome da tabela no db
         public DbSet<Domain.Activity> Activities { get; set; }
+        public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // configurando primary key da tabela de join de activity e user
+            builder.Entity<ActivityAttendee>(x => x.HasKey(aa => new {aa.AppUserId, aa.ActivityId}));
+        
+            //relacao entre user e activity
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.AppUser)
+                .WithMany(a => a.Activities)
+                .HasForeignKey(aa => aa.AppUserId);
+
+            //relacao entre activity e user
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.Activity)
+                .WithMany(a => a.Attendees)
+                .HasForeignKey(aa => aa.ActivityId);
+        }
     }
 }

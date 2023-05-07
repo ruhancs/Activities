@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]//temporario
     public class ActivitiesController : BaseApiController
     {
 
@@ -29,6 +28,9 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new CreateUseCase.Command{Activity = activity}));
         }
 
+        // IsActivityHost definida em Infrastructure.Security.IsHostRequirement
+        // e habilitada em IdentityServiceExtensions
+        [Authorize(Policy = "IsActivityHost")]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditActivity(Guid id,[FromBody]Activity activity)
         {
@@ -37,10 +39,17 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new EditUseCase.Command{Activity = activity}));
         }
 
+        [Authorize(Policy = "IsActivityHost")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
             return HandleResult(await Mediator.Send(new DeleteUseCase.Command{Id = id}));
+        }
+
+        [HttpPost("{:id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new UpdateAttendance.Command{Id = id}));
         }
     }
 }
