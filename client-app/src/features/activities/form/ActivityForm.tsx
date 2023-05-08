@@ -3,7 +3,7 @@ import { Button, Header, Label, Segment } from 'semantic-ui-react';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { IActivity } from '../../../app/models/IActivity';
+import { ActivityFormValues, IActivity } from '../../../app/models/IActivity';
 import LoadingComponent from '../../../app/layout/loadingComponents';
 import {v4 as uuid} from 'uuid';
 import { Formik, Form, ErrorMessage } from 'formik';
@@ -19,24 +19,14 @@ export default observer( function ActivityForm(){
 
     const {activityStore} = useStore();
     const {
-        selectedActivity, 
         createActivity, 
         updateActivity, 
-        loading, 
         loadActivity,
         loadingInitial} = activityStore
         const {id} = useParams();
         const navigate = useNavigate();
 
-        const [activity, setActivity] = useState<IActivity>({
-            id: '',
-            title: '',
-            category: '',
-            description: '',
-            date: null,
-            city: '',
-            venue: ''
-        });
+        const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues())
 
         const validationSchema = Yup.object({
             title: Yup.string().required('title is required'),
@@ -48,10 +38,10 @@ export default observer( function ActivityForm(){
         })
 
         useEffect(() => {
-            if(id) loadActivity(id).then(activity => setActivity(activity!))
+            if(id) loadActivity(id).then(activity => setActivity(new ActivityFormValues(activity)))
         }, [id, loadActivity])
 
-    function handleFormSubmit(activity: IActivity) {
+    function handleFormSubmit(activity: ActivityFormValues) {
         if(!activity.id){
             activity.id = uuid();
             createActivity(activity).then(() => navigate(`/activities/${activity.id}`));
@@ -85,7 +75,7 @@ export default observer( function ActivityForm(){
                         <MyTextInput placeholder='Venue'name='venue' />
                         <Button
                             disabled={isSubmitting || !dirty || !isValid} 
-                            loading={loading} 
+                            loading={isSubmitting} 
                             floated='right' 
                             positive type='submit' 
                             content='Submit' 
