@@ -7,6 +7,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Application.interfaces;
 using Infrastructure.Security;
+using Infrastructure.Photos;
 
 namespace API.Extensions
 {
@@ -53,6 +54,13 @@ namespace API.Extensions
 
             services.AddScoped<IUserAccessorRepository, UserAccessorRepository>();
 
+            // declarar o serviço de upload que esta em infrastructure
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+
+            // cloudinary para upload de imagens
+            //inserir variaveis em app.settings no cloudinary
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+            
             return services;
         }
     }

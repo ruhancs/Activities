@@ -20,11 +20,24 @@ namespace Application.Core
                             x => x.IsHost
                             ).AppUser.UserName));
             
-            //transforma de ActivityAttendee para profile
-            CreateMap<ActivityAttendee, Profiles.Profile>()
+            //transforma de ActivityAttendee para AttendeeDto
+            CreateMap<ActivityAttendee, AttendeeDto>()
                 .ForMember(p => p.DisplayName, a => a.MapFrom(s => s.AppUser.DisplayName))
                 .ForMember(p => p.Username, a => a.MapFrom(s => s.AppUser.UserName))
-                .ForMember(p => p.Bio, a => a.MapFrom(s => s.AppUser.Bio));
+                .ForMember(p => p.Bio, a => a.MapFrom(s => s.AppUser.Bio))
+                .ForMember(
+                    d => d.Image, 
+                    o => o.MapFrom(
+                        s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url
+                    ));
+        
+            //transformar AppUser para Profile
+            CreateMap<AppUser, Profiles.Profile>()
+                .ForMember(
+                    d => d.Image, 
+                    o => o.MapFrom(
+                        s => s.Photos.FirstOrDefault(x => x.IsMain).Url
+                    ));
         }
         
     }
