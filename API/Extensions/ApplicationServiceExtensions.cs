@@ -34,6 +34,7 @@ namespace API.Extensions
                     policy
                         .AllowAnyMethod()
                         .AllowAnyHeader()
+                        .AllowCredentials()//police para signalR
                         .WithOrigins("http://localhost:3000");
                 });
             });
@@ -60,6 +61,9 @@ namespace API.Extensions
             // cloudinary para upload de imagens
             //inserir variaveis em app.settings no cloudinary
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+            
+            services.AddSignalR();
+
             
             return services;
         }

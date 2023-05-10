@@ -35,6 +35,21 @@ namespace API.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+
+                    // configuraçao para utilizar autenticaçao com signalR
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context => 
+                        {
+                            var accesssToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if(!string.IsNullOrEmpty(accesssToken) && (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accesssToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             service.AddAuthorization(opt => {

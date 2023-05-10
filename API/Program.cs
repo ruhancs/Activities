@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Middleware;
+using API.SIgnalIR;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -46,6 +47,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// configuraçao do Hub signalR, nome da classe e a rota
+app.MapHub<ChatHub>("/chat");
 
 //criar database
 // using para quando terminar de utilizar o scope se destroi automaticamente limpa memoria

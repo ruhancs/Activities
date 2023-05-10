@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { ActivityFormValues, IActivity } from "../models/IActivity";
 import agent from "../api/agent";
-import {v4 as uuid} from 'uuid';
 import { format } from 'date-fns';
 import { store } from "./store";
 import { IProfile } from "../models/profile";
@@ -180,5 +179,9 @@ export default class ActivityStore {
         } finally {
             runInAction(() => this.loading = false);
         }
+    }
+
+    clearSelectedActivity = () => {
+        this.selectedActivity = undefined;
     }
 }
