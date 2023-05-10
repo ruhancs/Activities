@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ActivityFormValues, IActivity } from '../models/IActivity';
-import { error } from 'console';
 import { toast } from 'react-toastify';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import { IUser, IUserFormValues } from '../models/user';
+import { IProfile, Photo } from '../models/profile';
 
 const sleep = (delay: number) => {
     return new Promise((resolve) => {
@@ -85,9 +85,23 @@ const Account = {
     register: (user: IUserFormValues) => requests.post<IUser>('/account/register', user)
 }
 
+const Profiles = {
+    get: (username: string) => requests.get<IProfile>(`/profiles/${username}`),
+    uploadPhoto: (file: Blob) => {
+        let formData = new FormData();
+        formData.append('File', file);
+        return axios.post<Photo>('photos', formData, {
+            headers: {'Content-Type': 'multipart/form-data'}
+        })
+    },
+    setMainPhoto: (id: string) => requests.post(`/photos/${id}/setmain`,{}),
+    deletePhoto: (id: string) => requests.del(`/photos/${id}`)
+}
+
 const agent = {
     Activities,
-    Account
+    Account,
+    Profiles
 }
 
 export default agent;
