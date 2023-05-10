@@ -1,4 +1,5 @@
 using Application.Core;
+using Application.interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
@@ -16,18 +17,27 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
         {
             private readonly DataContext _context;
-        private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IMapper _mapper;
+            private readonly IUserAccessorRepository _userAccessor;
+            public Handler(
+                DataContext context, 
+                IMapper mapper,
+                IUserAccessorRepository userAccessor
+                )
             {
                 _mapper = mapper;
-                _context = context;    
+                _context = context;
+                _userAccessor = userAccessor;    
             }
 
             public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 //tranforma activity para ActivityDto
                 var activities = await _context.Activities
-                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider)
+                    .ProjectTo<ActivityDto>(
+                        _mapper.ConfigurationProvider,
+                        new {currentUsername = _userAccessor.GetUsername()}
+                        )
                     .ToListAsync();
 
                 return Result<List<ActivityDto>>.Success(activities);

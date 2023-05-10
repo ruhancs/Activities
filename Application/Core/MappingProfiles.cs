@@ -9,6 +9,8 @@ namespace Application.Core
     {
         public MappingProfiles()
         {
+            string currentUsername = null;
+
             //para atualizar a activity
             CreateMap<Activity, Activity>();
             
@@ -30,7 +32,14 @@ namespace Application.Core
                     d => d.Image, 
                     o => o.MapFrom(
                         s => s.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url
-                    ));
+                    ))
+                .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.AppUser.Followers.Count))
+                .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.AppUser.Followings.Count))
+                .ForMember(d => d.Following, 
+                    o => o.MapFrom(
+                        s => s.AppUser.Followers.Any(
+                            x => x.Observer.UserName == currentUsername
+                        )));
         
             //transformar AppUser para Profile
             CreateMap<AppUser, Profiles.Profile>()
@@ -38,7 +47,14 @@ namespace Application.Core
                     d => d.Image, 
                     o => o.MapFrom(
                         s => s.Photos.FirstOrDefault(x => x.IsMain).Url
-                    ));
+                    ))
+                .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.Followers.Count))
+                .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Followings.Count))
+                .ForMember(d => d.Following, 
+                    o => o.MapFrom(
+                        s => s.Followers.Any(
+                            x => x.Observer.UserName == currentUsername
+                        )));
             
             CreateMap<Comment, CommentDto>()
                 .ForMember(p => p.DisplayName, a => a.MapFrom(s => s.Author.DisplayName))
