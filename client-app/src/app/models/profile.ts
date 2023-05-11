@@ -5,6 +5,9 @@ export interface IProfile {
     displayName: string;
     image?: string | undefined;
     bio?: string;
+    followersCount: number;
+    followingCount: number;
+    following: boolean;
     photos?: Photo[];
 }
 

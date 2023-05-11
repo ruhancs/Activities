@@ -9,6 +9,11 @@ interface IProps {
 }
 
 export default observer( function ActivityListItemAttendee({attendess}: IProps) {
+    const styles ={
+        borderderColor: 'orange',
+        borderWidth: 3
+    }
+
     return (
         <List horizontal>
             {attendess.map(attendee => (
@@ -17,7 +22,12 @@ export default observer( function ActivityListItemAttendee({attendess}: IProps) 
                     key={attendee.username}
                     trigger={
                         <List.Item key={attendee.username} as={Link} to={`/profiles/${attendee.username}`}>
-                            <Image size="mini" circular src={attendee.image || '/assets/user.png'} />
+                            <Image 
+                                size="mini" 
+                                circular src={attendee.image || '/assets/user.png'}
+                                bordered
+                                style={attendee.following ? styles : null} 
+                            />
                         </List.Item>
                     }
                 >
