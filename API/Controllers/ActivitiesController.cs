@@ -12,7 +12,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetActivities([FromQuery]PagingParams pagingParams)
         {
-            return HandleResult(await Mediator.Send(new ListUseCase.Query{Params = pagingParams}));
+            return HandlePagedResult(await Mediator.Send(new ListUseCase.Query{Params = pagingParams}));
         }
 
         [HttpGet("{id}")]
