@@ -46,10 +46,18 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+// configuraçao para deploy
+
+app.UseDefaultFiles(); // busca em wwwroot arquivos index.html
+app.UseStaticFiles(); // pega o conteudo dentro de wwwroot 
+
 app.MapControllers();
 
 // configuraçao do Hub signalR, nome da classe e a rota
 app.MapHub<ChatHub>("/chat");
+
+// buscar as rotas nao conhecidas na API em FallbackController
+app.MapFallbackToController("Index", "Fallback");// nome da funçao e FallbackController
 
 //criar database
 // using para quando terminar de utilizar o scope se destroi automaticamente limpa memoria

@@ -25,7 +25,8 @@ namespace API.Extensions
             // adicionar DataContext para ser usado
             services.AddDbContext<DataContext>(opt => 
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                // opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
                 
             });
 
@@ -35,6 +36,8 @@ namespace API.Extensions
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()//police para signalR
+                        //verificar bearer token e utilizar a paginaçao aula 283
+                        .WithExposedHeaders("WWW-Authenticate", "Pagination")
                         .WithOrigins("http://localhost:3000");
                 });
             });
@@ -53,6 +56,7 @@ namespace API.Extensions
             //httpcontext para pegar o token
             services.AddHttpContextAccessor();
 
+            // httpcontext para pegar o nome do usuario pelo token
             services.AddScoped<IUserAccessorRepository, UserAccessorRepository>();
 
             // declarar o serviço de upload que esta em infrastructure

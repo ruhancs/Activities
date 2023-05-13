@@ -33,7 +33,9 @@ namespace API.Extensions
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = key,
                         ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        ValidateLifetime = true,//para o token expirar
+                        ClockSkew = TimeSpan.Zero//invalidar no exato momento que expira
                     };
 
                     // configuraçao para utilizar autenticaçao com signalR

@@ -35,6 +35,7 @@ namespace API.Controllers
 
             if(result)
             {
+                await SetRefreshToken(user);
                 return CreateUserObj(user);
             }
 
@@ -68,6 +69,7 @@ namespace API.Controllers
 
             if(result.Succeeded)
             {
+                await SetRefreshToken(user);
                 return CreateUserObj(user);
             }
 
@@ -83,7 +85,27 @@ namespace API.Controllers
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 
+            // await SetRefreshToken(user);
             return CreateUserObj(user);
+        }
+
+        [Authorize]
+        [HttpPost("refreshToken")]
+        public async Task<ActionResult<UserDTO>> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];//token nos cookies
+            var user = await _userManager.Users
+                .Include(r => r.RefresTokens)//incluir o token na busca
+                .Include(p => p.Photos)
+                .FirstOrDefaultAsync(x => x.UserName == User.FindFirstValue(ClaimTypes.Name));//pegar o usuario pelo nome que esta no token
+
+                if(user is null) return Unauthorized();
+
+                var oldToken = user.RefresTokens.SingleOrDefault(x => x.Token == refreshToken);
+
+                if(oldToken != null && !oldToken.IsActive) return Unauthorized();
+
+                return CreateUserObj(user);
         }
 
         private UserDTO CreateUserObj(AppUser user)
@@ -95,6 +117,22 @@ namespace API.Controllers
                 Token = _tokenService.CreateToken(user),
                 UserName = user.UserName
             };
+        }
+
+        private async Task SetRefreshToken(AppUser user)
+        {
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefresTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,//nao permite acesso via javascript
+                Expires = DateTime.UtcNow.AddDays(1),
+            };
+
+            Response.Cookies.Append("RefreshToken", refreshToken.Token, cookieOptions);
         }
     }
 }
